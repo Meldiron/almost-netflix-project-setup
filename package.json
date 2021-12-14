@@ -1,0 +1,17 @@
+{
+  "name": "netflix-clone-project-setup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aw-node-db-alpha": "^3.0.2",
+    "dotenv": "^10.0.0",
+    "fs-extra": "^10.0.0"
+  }
+}
