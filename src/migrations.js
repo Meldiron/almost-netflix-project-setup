@@ -45,7 +45,8 @@ const sdk = require("aw-node-db-alpha");
  client
   .setEndpoint(process.env.APPWRITE_ENDPOINT)
   .setProject(process.env.APPWRITE_PROJECT_ID)
-  .setKey(process.env.APPWRITE_API_KEY);
+  .setKey(process.env.APPWRITE_API_KEY)
+  .setSelfSigned();
 
  console.log("💼 Wiping project ...");
 
@@ -60,17 +61,22 @@ const sdk = require("aw-node-db-alpha");
   }
  }
 
+ const deleteCollection = async (name) => {
+  try {
+   return await db.deleteCollection(name);
+  } catch (err) {
+   // All good, doesnt have to exist
+   return null;
+  }
+ };
+
  // Delete old collections
- try {
-  await Promise.all([
-   db.deleteCollection("movies"),
-   db.deleteCollection("shows"),
-   db.deleteCollection("showSeasons"),
-   db.deleteCollection("showEpisodes"),
-  ]);
- } catch (err) {
-  // All good, doesnt have to exist
- }
+ await Promise.all([
+  deleteCollection("movies"),
+  deleteCollection("shows"),
+  deleteCollection("showSeasons"),
+  deleteCollection("showEpisodes"),
+ ]);
 
  // Wait 5 seconds
  // TODO: Wait for delete to finish

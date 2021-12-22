@@ -3,22 +3,44 @@ require("dotenv").config();
 
 // Load libraries
 const sdk = require("aw-node-db-alpha");
-const { Readable } = require("stream");
 const axios = require("axios").default;
+
+// Prepare Appwrite connection
+const client = new sdk.Client();
+const storage = new sdk.Storage(client);
+const db = new sdk.Database(client);
+
+client
+ .setEndpoint(process.env.APPWRITE_ENDPOINT)
+ .setProject(process.env.APPWRITE_PROJECT_ID)
+ .setKey(process.env.APPWRITE_API_KEY)
+ .setSelfSigned();
+
+const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
+ try {
+  const res = await func.bind(self)(...argsArr);
+
+  if (attempt > 1) {
+   console.log("Successfully pushed in attempt:" + attempt);
+  }
+  return res;
+ } catch (err) {
+  console.log(err);
+  console.log("Will retry! Current attempt: " + attempt);
+
+  await new Promise((pRes) => {
+   setTimeout(() => {
+    pRes(true);
+   }, 1000);
+  });
+
+  return await intiniteRequest(self, func, argsArr, attempt + 1);
+ }
+};
 
 (async () => {
  console.log("🤖 Seeds started");
  const startTime = Date.now();
-
- // Prepare Appwrite connection
- const client = new sdk.Client();
- const storage = new sdk.Storage(client);
- const db = new sdk.Database(client);
-
- client
-  .setEndpoint(process.env.APPWRITE_ENDPOINT)
-  .setProject(process.env.APPWRITE_PROJECT_ID)
-  .setKey(process.env.APPWRITE_API_KEY);
 
  // Get movies
  const downloadMovies = async (page = 1) => {
@@ -51,12 +73,12 @@ const axios = require("axios").default;
     { responseType: "stream" }
    );
 
-   const file = await storage.createFile(
+   const file = await intiniteRequest(storage, storage.createFile, [
     "unique()",
     image.data,
     ["role:all"],
-    []
-   );
+    [],
+   ]);
 
    const dbObject = {
     name: movie.title,
@@ -72,7 +94,11 @@ const axios = require("axios").default;
     ageRestriction: movieResponse.data.adult ? "AR18" : "AR13",
    };
 
-   await db.createDocument("movies", "unique()", dbObject);
+   await intiniteRequest(db, db.createDocument, [
+    "movies",
+    "unique()",
+    dbObject,
+   ]);
   }
  };
 
@@ -109,12 +135,12 @@ const axios = require("axios").default;
     { responseType: "stream" }
    );
 
-   const file = await storage.createFile(
+   const file = await intiniteRequest(storage, storage.createFile, [
     "unique()",
     image.data,
     ["role:all"],
-    []
-   );
+    [],
+   ]);
 
    const dbObject = {
     name: tv.name,
@@ -129,11 +155,11 @@ const axios = require("axios").default;
     ageRestriction: "AR18", // TODO: We dont have?
    };
 
-   const { $id: showId } = await db.createDocument(
+   const { $id: showId } = await intiniteRequest(db, db.createDocument, [
     "shows",
     "unique()",
-    dbObject
-   );
+    dbObject,
+   ]);
 
    let seasonSortIndex = 0;
    for (const season of tvResponse.data.seasons) {
@@ -145,11 +171,12 @@ const axios = require("axios").default;
      releaseYear: season.air_date ? season.air_date.split("-")[0] : undefined,
     };
 
-    const dbSeasonResponse = await db.createDocument(
+    const dbSeasonResponse = await intiniteRequest(db, db.createDocument, [
      "showSeasons",
      "unique()",
-     dbSeasonObject
-    );
+     dbSeasonObject,
+    ]);
+
     const seasonId = dbSeasonResponse.$id;
     seasonSortIndex++;
 
@@ -170,7 +197,11 @@ const axios = require("axios").default;
       durationMinutes: 1, // TODO: We dont have?
      };
 
-     await db.createDocument("showEpisodes", "unique()", dbEpisodeObject);
+     await intiniteRequest(db, db.createDocument, [
+      "showEpisodes",
+      "unique()",
+      dbEpisodeObject,
+     ]);
 
      episodeSortIndex++;
     }
