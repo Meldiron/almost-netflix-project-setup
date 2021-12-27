@@ -84,9 +84,10 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
 
    const cast = movieCastResponse.data.cast
     .sort((a, b) => (a.popularity > b.popularity ? -1 : 1))
-    .filter((c, cIndex) => cIndex < 5);
-   const tags = movieKeywordsResponse.data.keywords;
-   const genres = movieResponse.data.genres;
+    .filter((c, cIndex) => cIndex < 5)
+    .map((v) => v.name);
+   const tags = movieKeywordsResponse.data.keywords.map((v) => v.name);
+   const genres = movieResponse.data.genres.map((v) => v.name);
 
    let releaseDate = undefined;
    try {
