@@ -194,7 +194,10 @@ const sdk = require("aw-node-db-alpha");
    ["trendingIndex"],
    ["DESC"]
   ),
-  db.createIndex("movies", "nameFULLTEXT", "fulltext", ["name"], ["DESC"]),
+  db.createIndex("movies", "nameFULLTEXT", "fulltext", ["name"], ["ASC"]),
+  db.createIndex("movies", "genresFULLTEXT", "fulltext", ["genres"], ["ASC"]),
+  db.createIndex("movies", "castFULLTEXT", "fulltext", ["cast"], ["ASC"]),
+  db.createIndex("movies", "tagsFULLTEXT", "fulltext", ["tags"], ["ASC"]),
  ]);
 
  console.log(
