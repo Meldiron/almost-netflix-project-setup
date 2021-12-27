@@ -49,7 +49,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
   );
 
   for (const movie of moviesResponse.data.results) {
-   const imageUrl = movie.backdrop_path;
+   const imageUrl = movie.poster_path;
 
    if (!imageUrl) {
     console.log("🚧 Skipping ", movie.title);
@@ -70,7 +70,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
       `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${process.env.MDB_API_KEY}`
      ),
 
-     axios.get(`https://image.tmdb.org/t/p/w500/${imageUrl}`, {
+     axios.get(`https://image.tmdb.org/t/p/original/${imageUrl}`, {
       responseType: "stream",
      }),
     ]);
@@ -98,15 +98,29 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     type: "genre",
    }));
 
+   let releaseDate = undefined;
+   try {
+    const [releaseYear, releaseMonth, releaseDay] =
+     movieResponse.data.release_date.split("-");
+    releaseDate = new Date(releaseYear, releaseMonth - 1, releaseDay);
+   } catch (err) {
+    // No date, its OK
+   }
+
+   const netflixDate = Date.now() - 86400000 * Math.round(Math.random() * 1000);
+
    const dbObject = {
     name: movie.title,
     description: movie.overview,
     thumbnailImageId: file.$id,
-    releaseYear: movieResponse.data.release_date
-     ? +movieResponse.data.release_date.split("-")[0]
+    releaseDate: releaseDate
+     ? Math.floor(releaseDate.getTime() / 1000)
      : undefined,
     durationMinutes: Math.max(+movieResponse.data.runtime, 1),
     ageRestriction: movieResponse.data.adult ? "AR18" : "AR13",
+    trendingIndex: 1 + Math.round(99 * Math.random()),
+    isOriginal: Math.random() < 0.3,
+    netflixReleaseDate: Math.floor(netflixDate / 1000),
    };
 
    const dbDocument = await intiniteRequest(db, db.createDocument, [
@@ -139,7 +153,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
   // title > name
 
   for (const tv of tvsResponse.data.results) {
-   const imageUrl = tv.backdrop_path;
+   const imageUrl = tv.poster_path;
 
    if (!imageUrl) {
     console.log("🚧 Skipping ", tv.name);
@@ -177,6 +191,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     cast: tvCastResponse.data.cast.map((c) => c.name),
     tags: tvKeywordsResponse.data.results.map((k) => k.name),
     genres: tvResponse.data.genres.map((g) => g.name),
+    // TODO: Update to date
     releaseYear: tvResponse.data.first_air_date
      ? +tvResponse.data.first_air_date.split("-")[0]
      : undefined,
@@ -196,6 +211,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
      sortIndex: seasonSortIndex,
      name: season.name,
      description: season.overview,
+     // TODO: Update to date
      releaseYear: season.air_date ? season.air_date.split("-")[0] : undefined,
     };
 
@@ -219,6 +235,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
       sortIndex: episodeSortIndex,
       name: episode.name,
       description: episode.overview,
+      // TODO: Update to date
       releaseYear: episode.air_date
        ? episode.air_date.split("-")[0]
        : undefined,

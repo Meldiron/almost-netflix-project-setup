@@ -14,7 +14,14 @@ const sdk = require("aw-node-db-alpha");
  const movieMetaValue = ["value", 255, true, undefined, false];
  const movieId = ["movieId", 255, true, undefined, false];
  const thumbnailImageId = ["thumbnailImageId", 255, true, undefined, false];
- const releaseYear = ["releaseYear", false, 1000, 3000, undefined, false];
+ const releaseDate = [
+  "releaseDate",
+  false,
+  undefined,
+  undefined,
+  undefined,
+  false,
+ ];
  const cast = ["cast", 255, true, undefined, true];
  const tags = ["tags", 255, true, undefined, true];
  const genres = ["genres", 255, true, undefined, true];
@@ -22,6 +29,25 @@ const sdk = require("aw-node-db-alpha");
  const showId = ["showId", 255, true, undefined, false];
  const showSeasonId = ["showSeasonId", 255, true, undefined, false];
  const sortIndex = ["sortIndex", true, 0, 1000, undefined, false];
+
+ const isOriginal = ["isOriginal", false, false, false];
+ const netflixReleaseDate = [
+  "netflixReleaseDate",
+  false,
+  undefined,
+  undefined,
+  undefined,
+  false,
+ ];
+ const trendingIndex = [
+  "trendingIndex",
+  true,
+  undefined,
+  undefined,
+  undefined,
+  false,
+ ];
+
  const description = [
   "description",
   5000,
@@ -110,12 +136,12 @@ const sdk = require("aw-node-db-alpha");
   db.createStringAttribute("movies", ...name),
   db.createStringAttribute("movies", ...description),
   db.createStringAttribute("movies", ...thumbnailImageId),
-  //   db.createStringAttribute("movies", ...cast),
-  //   db.createStringAttribute("movies", ...tags),
-  //   db.createStringAttribute("movies", ...genres),
-  db.createIntegerAttribute("movies", ...releaseYear),
+  db.createIntegerAttribute("movies", ...releaseDate),
   db.createIntegerAttribute("movies", ...durationMinutes),
   db.createEnumAttribute("movies", ...ageRestriction),
+  db.createIntegerAttribute("movies", ...netflixReleaseDate),
+  db.createFloatAttribute("movies", ...trendingIndex),
+  db.createBooleanAttribute("movies", ...isOriginal),
 
   db.createStringAttribute("movieMeta", ...movieId),
   db.createStringAttribute("movieMeta", ...movieMetaType),
@@ -129,21 +155,21 @@ const sdk = require("aw-node-db-alpha");
   db.createStringAttribute("shows", ...cast),
   db.createStringAttribute("shows", ...tags),
   db.createStringAttribute("shows", ...genres),
-  db.createIntegerAttribute("shows", ...releaseYear),
+  db.createIntegerAttribute("shows", ...releaseDate),
 
   // Shows - Seasons
   db.createStringAttribute("showSeasons", ...showId),
   db.createIntegerAttribute("showSeasons", ...sortIndex),
   db.createStringAttribute("showSeasons", ...name),
   db.createStringAttribute("showSeasons", ...description),
-  db.createIntegerAttribute("showSeasons", ...releaseYear),
+  db.createIntegerAttribute("showSeasons", ...releaseDate),
 
   // Shows - Episodes
   db.createStringAttribute("showEpisodes", ...showSeasonId),
   db.createIntegerAttribute("showEpisodes", ...sortIndex),
   db.createStringAttribute("showEpisodes", ...name),
   db.createStringAttribute("showEpisodes", ...description),
-  db.createIntegerAttribute("showEpisodes", ...releaseYear),
+  db.createIntegerAttribute("showEpisodes", ...releaseDate),
   db.createIntegerAttribute("showEpisodes", ...durationMinutes),
  ]);
 
