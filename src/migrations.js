@@ -115,8 +115,6 @@ const sdk = require("aw-node-db-alpha");
 
  console.log("💼 Setting up project ...");
 
- // TODO: Prepare indexes
-
  // Setup collections
  await Promise.all([
   db.createCollection("movies", "Movies", ...defaultPermission),
@@ -178,6 +176,26 @@ const sdk = require("aw-node-db-alpha");
    pRes(true);
   }, 5000);
  });
+
+ await Promise.all([
+  db.createIndex("movies", "releaseDateDESC", "key", ["releaseDate"], ["DESC"]),
+  db.createIndex(
+   "movies",
+   "durationMinutesDESC",
+   "key",
+   ["durationMinutes"],
+   ["DESC"]
+  ),
+  db.createIndex("movies", "isOriginalDESC", "key", ["isOriginal"], ["DESC"]),
+  db.createIndex(
+   "movies",
+   "trendingIndexDESC",
+   "key",
+   ["trendingIndex"],
+   ["DESC"]
+  ),
+  db.createIndex("movies", "nameFULLTEXT", "fulltext", ["name"], ["DESC"]),
+ ]);
 
  console.log(
   "❇️ Migraions finished in",
