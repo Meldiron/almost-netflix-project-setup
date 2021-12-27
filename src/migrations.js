@@ -10,9 +10,6 @@ const sdk = require("aw-node-db-alpha");
 
  // Prepare attributes
  const name = ["name", 255, true, undefined, false];
- const movieMetaType = ["type", 255, true, undefined, false];
- const movieMetaValue = ["value", 255, true, undefined, false];
- const movieId = ["movieId", 255, true, undefined, false];
  const thumbnailImageId = ["thumbnailImageId", 255, true, undefined, false];
  const releaseDate = [
   "releaseDate",
@@ -22,9 +19,9 @@ const sdk = require("aw-node-db-alpha");
   undefined,
   false,
  ];
- const cast = ["cast", 255, true, undefined, true];
- const tags = ["tags", 255, true, undefined, true];
- const genres = ["genres", 255, true, undefined, true];
+ const cast = ["cast", 1024, true, undefined, false];
+ const tags = ["tags", 1024, true, undefined, false];
+ const genres = ["genres", 1024, true, undefined, false];
  const durationMinutes = ["durationMinutes", true, 1, 1000, undefined, false];
  const showId = ["showId", 255, true, undefined, false];
  const showSeasonId = ["showSeasonId", 255, true, undefined, false];
@@ -123,7 +120,7 @@ const sdk = require("aw-node-db-alpha");
  // Setup collections
  await Promise.all([
   db.createCollection("movies", "Movies", ...defaultPermission),
-  db.createCollection("movieMeta", "Movies - Metadata", ...defaultPermission),
+  //   db.createCollection("movieMeta", "Movies - Metadata", ...defaultPermission),
 
   db.createCollection("shows", "Shows", ...defaultPermission),
   db.createCollection("showSeasons", "Shows - Seasons", ...defaultPermission),
@@ -142,10 +139,9 @@ const sdk = require("aw-node-db-alpha");
   db.createIntegerAttribute("movies", ...netflixReleaseDate),
   db.createFloatAttribute("movies", ...trendingIndex),
   db.createBooleanAttribute("movies", ...isOriginal),
-
-  db.createStringAttribute("movieMeta", ...movieId),
-  db.createStringAttribute("movieMeta", ...movieMetaType),
-  db.createStringAttribute("movieMeta", ...movieMetaValue),
+  db.createStringAttribute("movies", ...cast),
+  db.createStringAttribute("movies", ...tags),
+  db.createStringAttribute("movies", ...genres),
 
   // Shows
   db.createStringAttribute("shows", ...name),

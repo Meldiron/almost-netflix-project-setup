@@ -84,19 +84,9 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
 
    const cast = movieCastResponse.data.cast
     .sort((a, b) => (a.popularity > b.popularity ? -1 : 1))
-    .map((c) => ({
-     value: c.name,
-     type: "cast",
-    }))
     .filter((c, cIndex) => cIndex < 5);
-   const tags = movieKeywordsResponse.data.keywords.map((k) => ({
-    value: k.name,
-    type: "tag",
-   }));
-   const genres = movieResponse.data.genres.map((g) => ({
-    value: g.name,
-    type: "genre",
-   }));
+   const tags = movieKeywordsResponse.data.keywords;
+   const genres = movieResponse.data.genres;
 
    let releaseDate = undefined;
    try {
@@ -121,25 +111,15 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     trendingIndex: 1 + Math.round(99 * Math.random()),
     isOriginal: Math.random() < 0.3,
     netflixReleaseDate: Math.floor(netflixDate / 1000),
+    genres: genres.join(", "),
+    tags: tags.join(", "),
+    cast: cast.join(", "),
    };
 
    const dbDocument = await intiniteRequest(db, db.createDocument, [
     "movies",
     "unique()",
     dbObject,
-   ]);
-
-   await Promise.all([
-    ...[...cast, ...tags, ...genres].map(async (metaData) => {
-     return await intiniteRequest(db, db.createDocument, [
-      "movieMeta",
-      "unique()",
-      {
-       ...metaData,
-       movieId: dbDocument.$id,
-      },
-     ]);
-    }),
    ]);
   }
  };
