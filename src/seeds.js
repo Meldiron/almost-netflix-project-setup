@@ -56,22 +56,24 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     continue;
    }
 
-   const movieResponse = await axios.get(
-    `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.MDB_API_KEY}`
-   );
+   const [movieResponse, movieKeywordsResponse, movieCastResponse, image] =
+    await Promise.all([
+     axios.get(
+      `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${process.env.MDB_API_KEY}`
+     ),
 
-   const movieKeywordsResponse = await axios.get(
-    `https://api.themoviedb.org/3/movie/${movie.id}/keywords?api_key=${process.env.MDB_API_KEY}`
-   );
+     axios.get(
+      `https://api.themoviedb.org/3/movie/${movie.id}/keywords?api_key=${process.env.MDB_API_KEY}`
+     ),
 
-   const movieCastResponse = await axios.get(
-    `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${process.env.MDB_API_KEY}`
-   );
+     axios.get(
+      `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${process.env.MDB_API_KEY}`
+     ),
 
-   const image = await axios.get(
-    `https://image.tmdb.org/t/p/w500/${imageUrl}`,
-    { responseType: "stream" }
-   );
+     axios.get(`https://image.tmdb.org/t/p/w500/${imageUrl}`, {
+      responseType: "stream",
+     }),
+    ]);
 
    const file = await intiniteRequest(storage, storage.createFile, [
     "unique()",
@@ -80,13 +82,26 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     [],
    ]);
 
+   const cast = movieCastResponse.data.cast
+    .sort((a, b) => (a.popularity > b.popularity ? -1 : 1))
+    .map((c) => ({
+     value: c.name,
+     type: "cast",
+    }))
+    .filter((c, cIndex) => cIndex < 5);
+   const tags = movieKeywordsResponse.data.keywords.map((k) => ({
+    value: k.name,
+    type: "tag",
+   }));
+   const genres = movieResponse.data.genres.map((g) => ({
+    value: g.name,
+    type: "genre",
+   }));
+
    const dbObject = {
     name: movie.title,
     description: movie.overview,
     thumbnailImageId: file.$id,
-    cast: movieCastResponse.data.cast.map((c) => c.name),
-    tags: movieKeywordsResponse.data.keywords.map((k) => k.name),
-    genres: movieResponse.data.genres.map((g) => g.name),
     releaseYear: movieResponse.data.release_date
      ? +movieResponse.data.release_date.split("-")[0]
      : undefined,
@@ -94,10 +109,23 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     ageRestriction: movieResponse.data.adult ? "AR18" : "AR13",
    };
 
-   await intiniteRequest(db, db.createDocument, [
+   const dbDocument = await intiniteRequest(db, db.createDocument, [
     "movies",
     "unique()",
     dbObject,
+   ]);
+
+   await Promise.all([
+    ...[...cast, ...tags, ...genres].map(async (metaData) => {
+     return await intiniteRequest(db, db.createDocument, [
+      "movieMeta",
+      "unique()",
+      {
+       ...metaData,
+       movieId: dbDocument.$id,
+      },
+     ]);
+    }),
    ]);
   }
  };
@@ -209,13 +237,13 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
   }
  };
 
- const maxPage = 5;
+ const maxPage = 25;
 
- console.log(`🤖 Will download ${maxPage * 20} TV shows`);
- for (let page = 1; page <= maxPage; page++) {
-  console.log(`💼 [${page}/${maxPage}] Downloading +20 TV shows ...`);
-  await downloadShows(page);
- }
+ //  console.log(`🤖 Will download ${maxPage * 20} TV shows`);
+ //  for (let page = 1; page <= maxPage; page++) {
+ //   console.log(`💼 [${page}/${maxPage}] Downloading +20 TV shows ...`);
+ //   await downloadShows(page);
+ //  }
 
  console.log(`🤖 Will download ${maxPage * 20} movies`);
  for (let page = 1; page <= maxPage; page++) {
@@ -232,4 +260,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
  // Error handler
  console.log("🚨 Could not finish seeds:");
  console.error(err);
+ if (err.toJSON) {
+  console.log(err.toJSON());
+ }
 });

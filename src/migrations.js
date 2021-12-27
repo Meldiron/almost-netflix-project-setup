@@ -10,6 +10,9 @@ const sdk = require("aw-node-db-alpha");
 
  // Prepare attributes
  const name = ["name", 255, true, undefined, false];
+ const movieMetaType = ["type", 255, true, undefined, false];
+ const movieMetaValue = ["value", 255, true, undefined, false];
+ const movieId = ["movieId", 255, true, undefined, false];
  const thumbnailImageId = ["thumbnailImageId", 255, true, undefined, false];
  const releaseYear = ["releaseYear", false, 1000, 3000, undefined, false];
  const cast = ["cast", 255, true, undefined, true];
@@ -73,6 +76,7 @@ const sdk = require("aw-node-db-alpha");
  // Delete old collections
  await Promise.all([
   deleteCollection("movies"),
+  deleteCollection("movieMeta"),
   deleteCollection("shows"),
   deleteCollection("showSeasons"),
   deleteCollection("showEpisodes"),
@@ -93,6 +97,8 @@ const sdk = require("aw-node-db-alpha");
  // Setup collections
  await Promise.all([
   db.createCollection("movies", "Movies", ...defaultPermission),
+  db.createCollection("movieMeta", "Movies - Metadata", ...defaultPermission),
+
   db.createCollection("shows", "Shows", ...defaultPermission),
   db.createCollection("showSeasons", "Shows - Seasons", ...defaultPermission),
   db.createCollection("showEpisodes", "Shows - Episodes", ...defaultPermission),
@@ -104,12 +110,16 @@ const sdk = require("aw-node-db-alpha");
   db.createStringAttribute("movies", ...name),
   db.createStringAttribute("movies", ...description),
   db.createStringAttribute("movies", ...thumbnailImageId),
-  db.createStringAttribute("movies", ...cast),
-  db.createStringAttribute("movies", ...tags),
-  db.createStringAttribute("movies", ...genres),
+  //   db.createStringAttribute("movies", ...cast),
+  //   db.createStringAttribute("movies", ...tags),
+  //   db.createStringAttribute("movies", ...genres),
   db.createIntegerAttribute("movies", ...releaseYear),
   db.createIntegerAttribute("movies", ...durationMinutes),
   db.createEnumAttribute("movies", ...ageRestriction),
+
+  db.createStringAttribute("movieMeta", ...movieId),
+  db.createStringAttribute("movieMeta", ...movieMetaType),
+  db.createStringAttribute("movieMeta", ...movieMetaValue),
 
   // Shows
   db.createStringAttribute("shows", ...name),
@@ -156,4 +166,7 @@ const sdk = require("aw-node-db-alpha");
  // Error handler
  console.log("🚨 Could not finish migration:");
  console.error(err);
+ if (err.toJSON) {
+  console.log(err.toJSON());
+ }
 });
