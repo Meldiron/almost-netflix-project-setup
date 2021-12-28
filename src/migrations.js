@@ -99,10 +99,7 @@ const sdk = require("aw-node-db-alpha");
  // Delete old collections
  await Promise.all([
   deleteCollection("movies"),
-  deleteCollection("movieMeta"),
-  deleteCollection("shows"),
-  deleteCollection("showSeasons"),
-  deleteCollection("showEpisodes"),
+  deleteCollection("watchlists"),
  ]);
 
  // Wait 5 seconds
