@@ -23,10 +23,6 @@ const sdk = require("aw-node-db-alpha");
  const tags = ["tags", 1024, true, undefined, false];
  const genres = ["genres", 1024, true, undefined, false];
  const durationMinutes = ["durationMinutes", true, 1, 1000, undefined, false];
- const showId = ["showId", 255, true, undefined, false];
- const showSeasonId = ["showSeasonId", 255, true, undefined, false];
- const sortIndex = ["sortIndex", true, 0, 1000, undefined, false];
-
  const isOriginal = ["isOriginal", false, false, false];
  const netflixReleaseDate = [
   "netflixReleaseDate",
@@ -44,7 +40,6 @@ const sdk = require("aw-node-db-alpha");
   undefined,
   false,
  ];
-
  const description = [
   "description",
   5000,
@@ -60,8 +55,13 @@ const sdk = require("aw-node-db-alpha");
   false,
  ];
 
+ const userId = ["userId", 255, true, undefined, false];
+ const movieId = ["movieId", 255, true, undefined, false];
+ const createdAt = ["createdAt", false, undefined, undefined, undefined, false];
+
  // Prepare permissions
- const defaultPermission = ["collection", ["role:all"], []];
+ const defaultPermission = ["collection", ["role:member"], []];
+ const watchlistPermission = ["document", ["role:member"], []];
 
  // Prepare Appwrite connection
  const client = new sdk.Client();
@@ -118,11 +118,7 @@ const sdk = require("aw-node-db-alpha");
  // Setup collections
  await Promise.all([
   db.createCollection("movies", "Movies", ...defaultPermission),
-  //   db.createCollection("movieMeta", "Movies - Metadata", ...defaultPermission),
-
-  db.createCollection("shows", "Shows", ...defaultPermission),
-  db.createCollection("showSeasons", "Shows - Seasons", ...defaultPermission),
-  db.createCollection("showEpisodes", "Shows - Episodes", ...defaultPermission),
+  db.createCollection("watchlists", "Watchlists", ...watchlistPermission),
  ]);
 
  // Setup attributes
@@ -141,30 +137,9 @@ const sdk = require("aw-node-db-alpha");
   db.createStringAttribute("movies", ...tags),
   db.createStringAttribute("movies", ...genres),
 
-  // Shows
-  db.createStringAttribute("shows", ...name),
-  db.createStringAttribute("shows", ...description),
-  db.createEnumAttribute("shows", ...ageRestriction),
-  db.createStringAttribute("shows", ...thumbnailImageId),
-  db.createStringAttribute("shows", ...cast),
-  db.createStringAttribute("shows", ...tags),
-  db.createStringAttribute("shows", ...genres),
-  db.createIntegerAttribute("shows", ...releaseDate),
-
-  // Shows - Seasons
-  db.createStringAttribute("showSeasons", ...showId),
-  db.createIntegerAttribute("showSeasons", ...sortIndex),
-  db.createStringAttribute("showSeasons", ...name),
-  db.createStringAttribute("showSeasons", ...description),
-  db.createIntegerAttribute("showSeasons", ...releaseDate),
-
-  // Shows - Episodes
-  db.createStringAttribute("showEpisodes", ...showSeasonId),
-  db.createIntegerAttribute("showEpisodes", ...sortIndex),
-  db.createStringAttribute("showEpisodes", ...name),
-  db.createStringAttribute("showEpisodes", ...description),
-  db.createIntegerAttribute("showEpisodes", ...releaseDate),
-  db.createIntegerAttribute("showEpisodes", ...durationMinutes),
+  db.createStringAttribute("watchlists", ...userId),
+  db.createStringAttribute("watchlists", ...movieId),
+  db.createIntegerAttribute("watchlists", ...createdAt),
  ]);
 
  // TODO: Setup indexes
@@ -198,6 +173,8 @@ const sdk = require("aw-node-db-alpha");
   db.createIndex("movies", "genresFULLTEXT", "fulltext", ["genres"], ["ASC"]),
   db.createIndex("movies", "castFULLTEXT", "fulltext", ["cast"], ["ASC"]),
   db.createIndex("movies", "tagsFULLTEXT", "fulltext", ["tags"], ["ASC"]),
+
+  db.createIndex("watchlists", "createdAtDESC", "key", ["createdAt"], ["DESC"]),
  ]);
 
  console.log(
