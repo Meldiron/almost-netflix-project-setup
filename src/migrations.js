@@ -71,7 +71,8 @@ const sdk = require("node-appwrite");
  client
   .setEndpoint(process.env.APPWRITE_ENDPOINT)
   .setProject(process.env.APPWRITE_PROJECT_ID)
-  .setKey(process.env.APPWRITE_API_KEY);
+  .setKey(process.env.APPWRITE_API_KEY)
+  .setSelfSigned();
 
  console.log("💼 Wiping project ...");
 
