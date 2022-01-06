@@ -70,9 +70,12 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
       `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${process.env.MDB_API_KEY}`
      ),
 
-     axios.get(`https://image.tmdb.org/t/p/original/${imageUrl}`, {
-      responseType: "stream",
-     }),
+     axios.get(
+      `https://image.tmdb.org/t/p/original/${imageUrl}`.split("//").join("/"),
+      {
+       responseType: "stream",
+      }
+     ),
     ]);
 
    const file = await intiniteRequest(storage, storage.createFile, [
