@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 // Load libraries
-const sdk = require("aw-node-db-alpha");
+const sdk = require("node-appwrite");
 const axios = require("axios").default;
 
 // Prepare Appwrite connection
@@ -13,8 +13,7 @@ const db = new sdk.Database(client);
 client
  .setEndpoint(process.env.APPWRITE_ENDPOINT)
  .setProject(process.env.APPWRITE_PROJECT_ID)
- .setKey(process.env.APPWRITE_API_KEY)
- .setSelfSigned();
+ .setKey(process.env.APPWRITE_API_KEY);
 
 const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
  try {

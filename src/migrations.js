@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 // Load libraries
-const sdk = require("aw-node-db-alpha");
+const sdk = require("node-appwrite");
 
 (async () => {
  console.log("🤖 Migrations started");
@@ -71,8 +71,7 @@ const sdk = require("aw-node-db-alpha");
  client
   .setEndpoint(process.env.APPWRITE_ENDPOINT)
   .setProject(process.env.APPWRITE_PROJECT_ID)
-  .setKey(process.env.APPWRITE_API_KEY)
-  .setSelfSigned();
+  .setKey(process.env.APPWRITE_API_KEY);
 
  console.log("💼 Wiping project ...");
 

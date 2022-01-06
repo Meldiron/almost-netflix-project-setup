@@ -13,9 +13,9 @@
  "author": "",
  "license": "ISC",
  "dependencies": {
-  "aw-node-db-alpha": "^3.0.2",
   "axios": "^0.24.0",
   "dotenv": "^10.0.0",
-  "fs-extra": "^10.0.0"
+  "fs-extra": "^10.0.0",
+  "node-appwrite": "^4.0.1"
  }
 }
