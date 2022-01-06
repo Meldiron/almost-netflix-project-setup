@@ -139,8 +139,6 @@ const sdk = require("aw-node-db-alpha");
   db.createIntegerAttribute("watchlists", ...createdAt),
  ]);
 
- // TODO: Setup indexes
-
  // Wait 5 seconds
  // TODO: Wait for attribute creation to finish
  await new Promise((pRes) => {
@@ -172,6 +170,13 @@ const sdk = require("aw-node-db-alpha");
   db.createIndex("movies", "tagsFULLTEXT", "fulltext", ["tags"], ["ASC"]),
 
   db.createIndex("watchlists", "createdAtDESC", "key", ["createdAt"], ["DESC"]),
+  db.createIndex(
+   "watchlists",
+   "userIdASCmovieIdASC",
+   "key",
+   ["userId", "movieId"],
+   ["ASC", "ASC"]
+  ),
  ]);
 
  console.log(
