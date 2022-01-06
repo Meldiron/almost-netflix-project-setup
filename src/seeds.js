@@ -56,6 +56,10 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     continue;
    }
 
+   let imageAbsoluteUrl = `https://image.tmdb.org/t/p/original${
+    imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl
+   }`;
+
    const [movieResponse, movieKeywordsResponse, movieCastResponse, image] =
     await Promise.all([
      axios.get(
@@ -70,12 +74,9 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
       `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${process.env.MDB_API_KEY}`
      ),
 
-     axios.get(
-      `https://image.tmdb.org/t/p/original/${imageUrl}`.split("//").join("/"),
-      {
-       responseType: "stream",
-      }
-     ),
+     axios.get(imageAbsoluteUrl, {
+      responseType: "stream",
+     }),
     ]);
 
    const file = await intiniteRequest(storage, storage.createFile, [
