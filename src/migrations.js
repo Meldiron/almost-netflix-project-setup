@@ -87,6 +87,7 @@ const sdk = require("node-appwrite");
                 await storage.deleteFile(file.$id);
             }
         }
+        storage.deleteBucket(bucket.$id);
     }
 
     const deleteCollection = async (name) => {
@@ -135,9 +136,13 @@ const sdk = require("node-appwrite");
 
     await db.create("almost-netflix-project-db", "Almost Netflix Project")
 
-    // Prepare permissions
-    const defaultPermission = ["collection", ["users"], []];
-    const watchlistPermission = ["document", ["users"], []];
+    await storage.createBucket('almost-netflix-project', 'almost-netflix-project',
+        [
+            sdk.Permission.read(sdk.Role.users()),
+            sdk.Permission.write(sdk.Role.users()),
+            sdk.Permission.update(sdk.Role.users()),
+            sdk.Permission.delete(sdk.Role.users())
+        ], true);
 
     // Setup collections
     await Promise.all([
@@ -183,7 +188,7 @@ const sdk = require("node-appwrite");
     });
 
     await Promise.all([
-        db.createIndex("almost-netflix-project-db","movies", "releaseDateDESC", "key", ["releaseDate"], ["DESC"]),
+        db.createIndex("almost-netflix-project-db", "movies", "releaseDateDESC", "key", ["releaseDate"], ["DESC"]),
         db.createIndex(
             "almost-netflix-project-db",
             "movies",
@@ -192,7 +197,7 @@ const sdk = require("node-appwrite");
             ["durationMinutes"],
             ["DESC"]
         ),
-        db.createIndex("almost-netflix-project-db","movies", "isOriginalDESC", "key", ["isOriginal"], ["DESC"]),
+        db.createIndex("almost-netflix-project-db", "movies", "isOriginalDESC", "key", ["isOriginal"], ["DESC"]),
         db.createIndex(
             "almost-netflix-project-db",
             "movies",
@@ -201,12 +206,12 @@ const sdk = require("node-appwrite");
             ["trendingIndex"],
             ["DESC"]
         ),
-        db.createIndex("almost-netflix-project-db","movies", "nameFULLTEXT", "fulltext", ["name"], ["ASC"]),
-        db.createIndex("almost-netflix-project-db","movies", "genresFULLTEXT", "fulltext", ["genres"], ["ASC"]),
-        db.createIndex("almost-netflix-project-db","movies", "castFULLTEXT", "fulltext", ["cast"], ["ASC"]),
-        db.createIndex("almost-netflix-project-db","movies", "tagsFULLTEXT", "fulltext", ["tags"], ["ASC"]),
+        db.createIndex("almost-netflix-project-db", "movies", "nameFULLTEXT", "fulltext", ["name"], ["ASC"]),
+        db.createIndex("almost-netflix-project-db", "movies", "genresFULLTEXT", "fulltext", ["genres"], ["ASC"]),
+        db.createIndex("almost-netflix-project-db", "movies", "castFULLTEXT", "fulltext", ["cast"], ["ASC"]),
+        db.createIndex("almost-netflix-project-db", "movies", "tagsFULLTEXT", "fulltext", ["tags"], ["ASC"]),
 
-        db.createIndex("almost-netflix-project-db","watchlists", "createdAtDESC", "key", ["createdAt"], ["DESC"]),
+        db.createIndex("almost-netflix-project-db", "watchlists", "createdAtDESC", "key", ["createdAt"], ["DESC"]),
         db.createIndex(
             "almost-netflix-project-db",
             "watchlists",

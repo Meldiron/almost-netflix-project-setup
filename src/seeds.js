@@ -8,7 +8,7 @@ const axios = require("axios").default;
 // Prepare Appwrite connection
 const client = new sdk.Client();
 const storage = new sdk.Storage(client);
-const db = new sdk.Database(client);
+const db = new sdk.Databases(client);
 
 client
  .setEndpoint(process.env.APPWRITE_ENDPOINT)
@@ -80,9 +80,10 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
     ]);
 
    const file = await intiniteRequest(storage, storage.createFile, [
-    "unique()",
+    "almost-netflix-project",
+    sdk.ID.unique(),
     image.data,
-    ["role:all"],
+    undefined,
     [],
    ]);
 
@@ -122,6 +123,7 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
    };
 
    const dbDocument = await intiniteRequest(db, db.createDocument, [
+    "almost-netflix-project-db",
     "movies",
     "unique()",
     dbObject,
