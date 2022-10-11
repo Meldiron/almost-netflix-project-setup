@@ -79,12 +79,11 @@ const intiniteRequest = async function (self, func, argsArr, attempt = 1) {
      }),
     ]);
 
-   const file = await intiniteRequest(storage, storage.createFile, [
+    const file = await intiniteRequest(storage, storage.createFile, [
     "almost-netflix-project",
     sdk.ID.unique(),
-    image.data,
-    undefined,
-    [],
+    sdk.InputFile.fromStream(image.data, image.data.responseUrl.split('/').at(-1), image.headers["content-length"]),
+    undefined
    ]);
 
    const cast = movieCastResponse.data.cast
