@@ -5,6 +5,9 @@
 - Create project and store it's ID in `.env` (`APPWRITE_PROJECT_ID`)
 - Create API key and store it in `.env` (`APPWRITE_API_KEY`)
 - Run migrations: `node migrations.js`
+- Register at https://www.themoviedb.org/
+- Create API key at https://www.themoviedb.org/settings/api
+- Create API key for TMDB and store it in `.env`(`MDB_API_KEY`)
 - Run seeds: `node seeds.js`
 
 _Node version used: 16.x_
