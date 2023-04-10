@@ -1,21 +1,21 @@
 {
- "name": "netflix-clone-project-setup",
- "version": "1.0.0",
- "description": "",
- "main": "index.js",
- "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "migrations": "node src/migrations.js",
-  "seeds": "node src/seeds.js",
-  "start": "npm run migrations && npm run seeds"
- },
- "keywords": [],
- "author": "",
- "license": "ISC",
- "dependencies": {
-  "axios": "^0.24.0",
-  "dotenv": "^10.0.0",
-  "fs-extra": "^10.0.0",
-  "node-appwrite": "^8.1.0"
- }
+  "name": "netflix-clone-project-setup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrations": "node src/migrations.js",
+    "seeds": "node src/seeds.js",
+    "start": "npm run migrations && npm run seeds"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.3.5",
+    "dotenv": "^16.0.3",
+    "fs-extra": "^11.1.1",
+    "node-appwrite": "^8.2.0"
+  }
 }
